@@ -3,44 +3,48 @@ import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
+
 public class main {
-    public static void runGame(Socket socket, boolean isServer) {
+    private static final List<String> champions = Arrays.asList("Champion1", "Champion2", "Champion3", "Champion4", "Champion5");
+
+    public static void startChampionSelect(Socket socket, boolean isServer) {
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
         ) {
-            List<String> champions = Arrays.asList("Champion1", "Champion2", "Champion3", "Champion4");
-            List<String> selected = new ArrayList<>();
-            try (Scanner scanner = new Scanner(System.in)) {
-                while (selected.size() < champions.size()) {
-                    if ((isServer && selected.size() % 2 == 0) || (!isServer && selected.size() % 2 != 0)) {
-                        System.out.println("Available champions: " + champions);
-                        System.out.print("Select a champion: ");
-                        String choice;
+            List<String> serverTeam = new ArrayList<>();
+            List<String> clientTeam = new ArrayList<>();
+            List<String> availableChampions = new ArrayList<>(champions);
 
-                        while (true) {
-                            choice = scanner.nextLine();
-                            if (champions.contains(choice) && !selected.contains(choice)) {
-                                break;
-                            }
-                            System.out.print("Invalid choice. Try again: ");
-                        }
-
-                        selected.add(choice);
-                        out.println(choice);
-                    } else {
-                        System.out.println("Waiting for opponent...");
-                        String opponentChoice = in.readLine();
-                        selected.add(opponentChoice);
-                        System.out.println("Opponent selected: " + opponentChoice);
-                    }
+            while (serverTeam.size() + clientTeam.size() < 4) {
+                if (isServer) {
+                    drawUI.showChampionSelect(availableChampions, serverTeam, "Server");
+                    String choice = drawUI.getChampionChoice(availableChampions);
+                    serverTeam.add(choice);
+                    availableChampions.remove(choice);
+                    out.println(choice);
+                } else {
+                    drawUI.showChampionSelect(availableChampions, clientTeam, "Client");
+                    String choice = drawUI.getChampionChoice(availableChampions);
+                    clientTeam.add(choice);
+                    availableChampions.remove(choice);
+                    out.println(choice);
                 }
-            } finally {
-                socket.close();
+                isServer = !isServer;
             }
 
-            System.out.println("Selection complete: " + selected);
+            saveTeamsToFile(serverTeam, clientTeam);
+            System.out.println("Teams saved to file.");
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveTeamsToFile(List<String> serverTeam, List<String> clientTeam) {
+        try (PrintWriter writer = new PrintWriter("teams.txt")) {
+            writer.println("Server Team: " + serverTeam);
+            writer.println("Client Team: " + clientTeam);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
