@@ -6,28 +6,8 @@ import java.util.*;
 
 public class main {
     private static final List<String> champions = Arrays.asList("Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6", "Ch7", "Ch8", "Ch9", "Ch10");
+    static int teamSizeLimit;
 
-    /**
-     * Starts the champion select process for a game of League of Legends.
-     *
-     * This method takes a socket and a boolean as parameters. The socket is
-     * used to communicate with the other player, and the boolean is used to
-     * determine whether the player is the server or the client.
-     *
-     * The champion select process is as follows:
-     *  1. The server and client each select a champion from the list of
-     *     available champions.
-     *  2. The server and client each send their chosen champion to the
-     *     other player.
-     *  3. The server and client each add the received champion to their
-     *     respective teams.
-     *  4. Steps 1-3 are repeated until each team has 4 champions.
-     *  5. The teams are saved to a file.
-     *
-     * @param socket the socket used to communicate with the other player
-     * @param turn a boolean indicating whether the player is the server
-     *                or the client
-     */
     public static void startChampionSelect(Socket socket, boolean isServer) {
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -40,7 +20,7 @@ public class main {
             boolean turn = isServer;
 
 
-            while (myTeam.size() < 4 || enemyTeam.size() < 4) {
+            while (myTeam.size() < teamSizeLimit || enemyTeam.size() < teamSizeLimit) {
                 System.out.println(isServer ? "I'm server" : "I'm client");
                 drawUI.showChampionSelect(availableChampions, myTeam, enemyTeam);
 
@@ -52,17 +32,17 @@ public class main {
                     out.println(choice);
 
                 // waiting turn
+            } else {
+                String response = in.readLine();
+                if (response == null) {
+                    System.out.println("Server sent null champion");
+                    // handle this error case
                 } else {
-                    String response = in.readLine();
-                    if (response == null) {
-                        System.out.println("Server sent null champion");
-                        // handle this error case
-                    } else {
-                        enemyTeam.add(response);
-                        availableChampions.remove(response);
-                        System.out.println("Received champion from server: " + response);
-                    }
+                    enemyTeam.add(response);
+                    availableChampions.remove(response);
+                    System.out.println("Received champion from server: " + response);
                 }
+            }
                 turn = !turn;
             }
 

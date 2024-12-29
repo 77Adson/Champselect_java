@@ -1,2 +1,0 @@
-Server Team: [Ch4, Ch10, Ch6, Ch8]
-Client Team: [Ch2, Ch5, Ch3, Ch1]
