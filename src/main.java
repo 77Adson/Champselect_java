@@ -6,9 +6,13 @@ import java.util.*;
 
 public class main {
     private static final List<String> champions = Arrays.asList("Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6", "Ch7", "Ch8", "Ch9", "Ch10");
-    static int teamSizeLimit;
+    private static int teamSizeLimit;
+    private static int banNumber;
 
-    public static void startChampionSelect(Socket socket, boolean isServer) {
+    public static void startChampionSelect(Socket socket, boolean isServer, Map<String, Integer> settings) {
+        teamSizeLimit = settings.get("teamSizeLimit");
+        banNumber = settings.get("banNumber");
+
         try (
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
@@ -18,6 +22,9 @@ public class main {
             List<String> availableChampions = new ArrayList<>(champions);
             
             boolean turn = isServer;
+
+            System.out.println("Team size limit: " + teamSizeLimit);
+            System.out.println("Ban number: " + banNumber);
 
 
             while (myTeam.size() < teamSizeLimit || enemyTeam.size() < teamSizeLimit) {
@@ -32,19 +39,15 @@ public class main {
                     out.println(choice);
 
                 // waiting turn
-            } else {
-                String response = in.readLine();
-                if (response == null) {
-                    System.out.println("Server sent null champion");
-                    // handle this error case
                 } else {
+                    System.out.println("Waiting for opponent's choice...");
+                    String response = in.readLine();
                     enemyTeam.add(response);
                     availableChampions.remove(response);
                     System.out.println("Received champion from server: " + response);
+                    }
+                    turn = !turn;
                 }
-            }
-                turn = !turn;
-            }
 
             saveTeamsToFile(myTeam, enemyTeam);
             System.out.println("Teams saved to file.");
