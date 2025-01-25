@@ -3,7 +3,7 @@ import java.net.Socket;
 import java.util.*;
 
 public class main {
-    private static final List<String> champions = Arrays.asList("Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6", "Ch7", "Ch8", "Ch9", "Ch10");
+    private static final List<String> champions = Arrays.asList("Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6", "Ch7", "Ch8", "Ch9", "Ch10", "Ch11");
     private static int teamSizeLimit;
     private static int banNumber;
 
@@ -28,7 +28,7 @@ public class main {
             System.out.println("Ban number: " + banNumber);
 
             // Create the GUI
-            drawUI gui = new drawUI(availableChampions, myTeam, enemyTeam, teamSizeLimit, banNumber);
+            drawUI gui = new drawUI(availableChampions, myTeam, enemyTeam, myBans, enemyBans);
 
             // Ban phase
             for (int i = 0; i < banNumber * 2; i++) {

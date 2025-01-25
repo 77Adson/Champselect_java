@@ -7,17 +7,23 @@ import java.util.List;
 public class drawUI {
     private final JFrame frame;
     private final JPanel buttonPanel;
-    private final JTextArea banArea;
+    private final JTextArea myBanArea;
+    private final JTextArea enemyBanArea;
     private final JTextArea myTeamArea;
     private final JTextArea enemyTeamArea;
     private final List<String> myTeam;
     private final List<String> enemyTeam;
     private final List<String> availableChampions;
+    private final List<String> myBans;
+    private final List<String> enemyBans;
 
-    public drawUI(List<String> availableChampions, List<String> myTeam, List<String> enemyTeam, int teamSizeLimit, int banNumber) {
+
+    public drawUI(List<String> availableChampions, List<String> myTeam, List<String> enemyTeam, List<String> myBans, List<String> enemyBans) {
         this.myTeam = myTeam;
         this.enemyTeam = enemyTeam;
         this.availableChampions = availableChampions;
+        this.myBans = myBans;
+        this.enemyBans = enemyBans;
 
         // Frame setup
         frame = new JFrame("Champion Select");
@@ -25,32 +31,42 @@ public class drawUI {
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
 
-        // Buttons for champions
-        buttonPanel = new JPanel(new GridLayout(0, 5, 5, 5)); // Dynamic grid layout
-        for (String champion : availableChampions) {
-            JButton champButton = new JButton(champion);
-            champButton.setFont(new Font("Arial", Font.BOLD, 12));
-            champButton.addActionListener(new ChampionButtonListener(champion));
-            buttonPanel.add(champButton);
-        }
-        JScrollPane buttonScrollPane = new JScrollPane(buttonPanel);
-
-        // Team and ban areas
-        banArea = new JTextArea("Bans:\n");
-        banArea.setEditable(false);
-        myTeamArea = new JTextArea("My Team:\n");
+        // Left panel(My Team and Bans)
+        JPanel leftPanel = new JPanel(new GridLayout(2, 1));
+        myBanArea = new JTextArea("Bans:\n" + String.join(", ", myBans));
+        myBanArea.setEditable(false);
+        myTeamArea = new JTextArea("My Team:\n" + String.join(", ", myTeam));
         myTeamArea.setEditable(false);
-        enemyTeamArea = new JTextArea("Enemy Team:\n");
-        enemyTeamArea.setEditable(false);
+        leftPanel.add(new JScrollPane(myBanArea));
+        leftPanel.add(new JScrollPane(myTeamArea));
+        
 
-        JPanel infoPanel = new JPanel(new GridLayout(1, 3));
-        infoPanel.add(new JScrollPane(banArea));
-        infoPanel.add(new JScrollPane(myTeamArea));
-        infoPanel.add(new JScrollPane(enemyTeamArea));
+        // Right panel(Enemy Team and Bans)
+        JPanel rightPanel = new JPanel(new GridLayout(2, 1));
+        enemyBanArea = new JTextArea("Bans:\n" + String.join(", ", enemyBans));
+        enemyBanArea.setEditable(false);
+        enemyTeamArea = new JTextArea("Enemy Team:\n" + String.join(", ", enemyTeam));
+        enemyTeamArea.setEditable(false);
+        rightPanel.add(new JScrollPane(enemyBanArea));
+        rightPanel.add(new JScrollPane(enemyTeamArea));
+
+        // Panel with fixed rows of 5 buttons
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(0, 5, 10, 10)); // 5 columns, unlimited rows
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        drawButtonPanel();
+
+        // Wrap the button panel in a JScrollPane
+        JScrollPane buttonScrollPane = new JScrollPane(buttonPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        buttonScrollPane.setPreferredSize(new Dimension(550, 400));
+        buttonScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smooth scrolling
+
 
         // Add components to frame
         frame.add(buttonScrollPane, BorderLayout.CENTER);
-        frame.add(infoPanel, BorderLayout.SOUTH);
+        frame.add(leftPanel, BorderLayout.WEST);
+        frame.add(rightPanel, BorderLayout.EAST);
 
         frame.setVisible(true);
     }
@@ -89,19 +105,30 @@ public class drawUI {
         }
     }
 
-    public void updateUI() {
-        banArea.setText("Bans:\n" + String.join(", ", availableChampions));
-        myTeamArea.setText("My Team:\n" + String.join(", ", myTeam));
-        enemyTeamArea.setText("Enemy Team:\n" + String.join(", ", enemyTeam));
-
-        // Refresh button list
+    void drawButtonPanel() {
         buttonPanel.removeAll();
         for (String champion : availableChampions) {
             JButton champButton = new JButton(champion);
             champButton.setFont(new Font("Arial", Font.BOLD, 12));
+            champButton.setPreferredSize(new Dimension(100, 100)); // Ensure square buttons
+            champButton.setMaximumSize(new Dimension(100, 100));  // Optional, to enforce square buttons
             champButton.addActionListener(new ChampionButtonListener(champion));
             buttonPanel.add(champButton);
         }
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
+    }
+
+    public void updateUI() {
+        // Update the text areas
+        myBanArea.setText("Bans:\n" + String.join("\n", myBans));
+        enemyBanArea.setText("Bans:\n" + String.join("\n", enemyBans));
+        myTeamArea.setText("My Team:\n" + String.join("\n", myTeam));
+        enemyTeamArea.setText("Enemy Team:\n" + String.join("\n", enemyTeam));
+
+        // Refresh button list
+        buttonPanel.removeAll();
+        drawButtonPanel();
         buttonPanel.revalidate();
         buttonPanel.repaint();
 
@@ -156,7 +183,7 @@ public class drawUI {
                 buttonPanel.revalidate();
                 buttonPanel.repaint();
             } else {
-                JOptionPane.showMessageDialog(frame, "Champion is already selected or banned.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Wait for your turn.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
