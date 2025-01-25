@@ -27,7 +27,7 @@ public class main {
             System.out.println("Ban number: " + banNumber);
 
 
-            while (myTeam.size() < teamSizeLimit || enemyTeam.size() < teamSizeLimit) {
+            while (myTeam.size() < 4 || enemyTeam.size() < 4) {
                 System.out.println(isServer ? "I'm server" : "I'm client");
                 drawUI.showChampionSelect(availableChampions, myTeam, enemyTeam);
 
