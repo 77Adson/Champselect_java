@@ -1,13 +1,11 @@
-// server.java
 import java.io.*;
 import java.net.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class server {
     private static Map<String, Integer> settings = new HashMap<>();
 
-    public static void get_settings(Map<String, Integer> settings) {
+    public static void getSettings(Map<String, Integer> settings) {
         server.settings = settings;
     }
 
@@ -17,9 +15,9 @@ public class server {
             Socket clientSocket = serverSocket.accept();
             System.out.println("Client connected.");
 
-            // Send teamSizeLimit to client
+            // Send settings to client in plain text
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            out.println(settings);
+            out.println("teamSizeLimit:" + settings.get("teamSizeLimit") + ",banNumber:" + settings.get("banNumber"));
 
             main.startChampionSelect(clientSocket, true, settings);
         } catch (IOException e) {
