@@ -24,10 +24,10 @@ public class start {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JLabel teamSizeLabel = new JLabel("Enter team size limit:");
-        JTextField teamSizeField = new JTextField("2", 5);
+        JTextField teamSizeField = new JTextField("5", 5);
 
         JLabel banNumberLabel = new JLabel("Enter ban number:");
-        JTextField banNumberField = new JTextField("1", 5);
+        JTextField banNumberField = new JTextField("3", 5);
 
         panel.add(teamSizeLabel);
         panel.add(teamSizeField);
