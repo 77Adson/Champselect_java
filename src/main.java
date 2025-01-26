@@ -13,14 +13,44 @@ public class main {
         // Dodajemy przykładowych championów
         champions.add(new Champion("pepe", "pepe.png"));
         champions.add(new Champion("amongus", "amongus.png"));
-        champions.add(new Champion("stanczyk", "stanczyk.png"));
+        champions.add(new Champion("stanczyk", "stanczyk.jpg"));
         champions.add(new Champion("maxwell", "maxwell.png"));
         champions.add(new Champion("freddy", "freddy.png"));
         champions.add(new Champion("richard", "richard.png"));
         champions.add(new Champion("muscleman", "muscleman.png"));
-        champions.add(new Champion("walterwhite", "walterwhite.png"));
-        champions.add(new Champion("vegeta", "vegeta.png"));
+        champions.add(new Champion("walterwhite", "walt.jpg"));
+        champions.add(new Champion("vegeta", "vegeta.jpg"));
         champions.add(new Champion("frieza", "frieza.png"));
+        champions.add(new Champion("trump", "trump.jpg"));
+        champions.add(new Champion("joebiden", "joebiden.png"));
+        champions.add(new Champion("goku", "goku.jpg"));
+        champions.add(new Champion("shrek", "shrek.png"));
+        champions.add(new Champion("donkey", "donkey.png"));
+        champions.add(new Champion("batman", "batman.jpg"));
+        champions.add(new Champion("joker", "joker.png"));
+        champions.add(new Champion("spiderman", "spiderman.jpg"));
+        champions.add(new Champion("saitama", "saitama.png"));
+        champions.add(new Champion("genos", "genos.jpg"));
+        champions.add(new Champion("sonic", "sonic.png"));
+        champions.add(new Champion("knuckles", "knuckles.jpg"));
+        champions.add(new Champion("tails", "tails.png"));
+        champions.add(new Champion("mario", "mario.jpg"));
+        champions.add(new Champion("luigi", "luigi.png"));
+        champions.add(new Champion("wario", "wario.jpg"));
+        champions.add(new Champion("yoshi", "yoshi.png"));
+        champions.add(new Champion("pikachu", "pikachu.jpg"));
+        champions.add(new Champion("charizard", "charizard.png"));
+        champions.add(new Champion("link", "link.jpg"));
+        champions.add(new Champion("zelda", "zelda.png"));
+        champions.add(new Champion("kirby", "kirby.png"));
+        champions.add(new Champion("metaknight", "metaknight.jpg"));
+        champions.add(new Champion("samus", "samus.png"));
+        champions.add(new Champion("masterchief", "masterchief.jpg"));
+        champions.add(new Champion("kratos", "kratos.png"));
+        champions.add(new Champion("aloy", "aloy.jpg"));
+        champions.add(new Champion("lara", "lara.png"));
+        champions.add(new Champion("geralt", "geralt.jpg"));
+        champions.add(new Champion("yennifer", "yennifer.png"));
     }
 
     public static void startChampionSelect(Socket socket, boolean isServer, Map<String, Integer> settings) {
