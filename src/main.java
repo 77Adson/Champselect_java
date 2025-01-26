@@ -1,44 +1,57 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.*;
 
 public class main {
-    private static final List<String> champions = Arrays.asList("Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6", "Ch7", "Ch8", "Ch9", "Ch10", "Ch11");
+    private static final List<Champion> champions = new ArrayList<>();
     private static int teamSizeLimit;
     private static int banNumber;
+
+    static {
+        // Dodajemy przykładowych championów
+        champions.add(new Champion("pepe", "pepe.png"));
+        champions.add(new Champion("amongus", "amongus.png"));
+        champions.add(new Champion("stanczyk", "stanczyk.png"));
+        champions.add(new Champion("maxwell", "maxwell.png"));
+        champions.add(new Champion("freddy", "freddy.png"));
+        champions.add(new Champion("richard", "richard.png"));
+        champions.add(new Champion("muscleman", "muscleman.png"));
+        champions.add(new Champion("walterwhite", "walterwhite.png"));
+        champions.add(new Champion("vegeta", "vegeta.png"));
+        champions.add(new Champion("frieza", "frieza.png"));
+    }
 
     public static void startChampionSelect(Socket socket, boolean isServer, Map<String, Integer> settings) {
         teamSizeLimit = settings.get("teamSizeLimit");
         banNumber = settings.get("banNumber");
+        banNumber *= 2;
 
         try (
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
         ) {
-            List<String> myTeam = new ArrayList<>();
-            List<String> enemyTeam = new ArrayList<>();
-            List<String> availableChampions = new ArrayList<>(champions);
+            List<Champion> myTeam = new ArrayList<>();
+            List<Champion> enemyTeam = new ArrayList<>();
+            List<Champion> availableChampions = new ArrayList<>(champions);
 
-            List<String> myBans = new ArrayList<>();  // Lista zbanowanych postaci przez moją drużynę
-            List<String> enemyBans = new ArrayList<>();  // Lista zbanowanych postaci przez drużynę przeciwnika
-
+            List<Champion> myBans = new ArrayList<>();
+            List<Champion> enemyBans = new ArrayList<>();
             boolean turn = isServer;
 
-            System.out.println("Team size limit: " + teamSizeLimit);
-            System.out.println("Ban number: " + banNumber);
-
-            // Create the GUI
+            // Tworzymy GUI
             drawUI gui = new drawUI(availableChampions, myTeam, enemyTeam, myBans, enemyBans);
 
-            // Ban phase
-            for (int i = 0; i < banNumber * 2; i++) {
+            // Faza banów
+            for (int i = 0; i < banNumber; i++) {
                 if (turn) {
                     System.out.println("Your turn to ban...");
                     gui.unlockButtons();
                     String ban = gui.getChampionChoice("Ban a champion");
-                    System.out.println("You banned: " + ban);
-                    availableChampions.remove(ban);
-                    myBans.add(ban);  // Dodajemy bana do listy moich banów
+                    Champion bannedChampion = findChampionByName(ban);
+                    myBans.add(bannedChampion);
+                    availableChampions.remove(bannedChampion);
                     out.println("BAN:" + ban);
                 } else {
                     System.out.println("Waiting for opponent's ban...");
@@ -46,52 +59,49 @@ public class main {
                     String response = in.readLine();
                     if (response.startsWith("BAN:")) {
                         String ban = response.substring(4);
-                        availableChampions.remove(ban);
-                        enemyBans.add(ban);  // Dodajemy bana do listy banów przeciwnika
-                        System.out.println("Opponent banned: " + ban);
+                        Champion bannedChampion = findChampionByName(ban);
+                        enemyBans.add(bannedChampion);
+                        availableChampions.remove(bannedChampion);
                     }
                 }
                 turn = !turn;
                 gui.updateUI();
             }
 
-            // Pick phase
+            // Faza wyboru
             while (myTeam.size() < teamSizeLimit || enemyTeam.size() < teamSizeLimit) {
                 if (turn) {
                     System.out.println("Your turn to pick...");
                     gui.unlockButtons();
                     String choice = gui.getChampionChoice("Pick a champion");
-                    myTeam.add(choice);
-                    availableChampions.remove(choice);
+                    Champion pickedChampion = findChampionByName(choice);
+                    myTeam.add(pickedChampion);
+                    availableChampions.remove(pickedChampion);
                     out.println(choice);
                 } else {
                     System.out.println("Waiting for opponent's choice...");
                     gui.lockButtons();
                     String response = in.readLine();
-                    enemyTeam.add(response);
-                    availableChampions.remove(response);
-                    System.out.println("Opponent picked: " + response);
+                    enemyTeam.add(findChampionByName(response));
+                    availableChampions.remove(findChampionByName(response));
                 }
                 turn = !turn;
                 gui.updateUI();
             }
 
-            // Po zakończeniu fazy wyboru bohaterów
-            gui.closeWindowAndShowSummary(myBans, enemyBans);  // Wywołanie metody po zakończeniu banów i wyborów
-
-            saveTeamsToFile(myTeam, enemyTeam);
-            System.out.println("Teams saved to file.");
-        } catch (IOException e) {
+            // Zapisujemy teamy do pliku
+            gui.closeWindowAndShowSummary(myBans, enemyBans);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void saveTeamsToFile(List<String> serverTeam, List<String> clientTeam) {
-        try (PrintWriter writer = new PrintWriter("teams.txt")) {
-            writer.println("Server Team: " + serverTeam);
-            writer.println("Client Team: " + clientTeam);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    private static Champion findChampionByName(String name) {
+        for (Champion champion : champions) {
+            if (champion.getName().equals(name)) {
+                return champion;
+            }
         }
+        return null;
     }
 }

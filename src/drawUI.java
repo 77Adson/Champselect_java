@@ -7,18 +7,18 @@ import java.util.List;
 public class drawUI {
     private final JFrame frame;
     private final JPanel buttonPanel;
-    private final JTextArea myBanArea;
-    private final JTextArea enemyBanArea;
-    private final JTextArea myTeamArea;
-    private final JTextArea enemyTeamArea;
-    private final List<String> myTeam;
-    private final List<String> enemyTeam;
-    private final List<String> availableChampions;
-    private final List<String> myBans;
-    private final List<String> enemyBans;
+    private final JPanel myBanArea;
+    private final JPanel myTeamArea;
+    private final JPanel enemyBanArea;
+    private final JPanel enemyTeamArea;
+    private final List<Champion> myTeam;
+    private final List<Champion> enemyTeam;
+    private final List<Champion> availableChampions;
+    private final List<Champion> myBans;
+    private final List<Champion> enemyBans;
 
 
-    public drawUI(List<String> availableChampions, List<String> myTeam, List<String> enemyTeam, List<String> myBans, List<String> enemyBans) {
+    public drawUI(List<Champion> availableChampions, List<Champion> myTeam, List<Champion> enemyTeam, List<Champion> myBans, List<Champion> enemyBans) {
         this.myTeam = myTeam;
         this.enemyTeam = enemyTeam;
         this.availableChampions = availableChampions;
@@ -33,22 +33,21 @@ public class drawUI {
 
         // Left panel(My Team and Bans)
         JPanel leftPanel = new JPanel(new GridLayout(2, 1));
-        myBanArea = new JTextArea("Bans:\n" + String.join(", ", myBans));
-        myBanArea.setEditable(false);
-        myTeamArea = new JTextArea("My Team:\n" + String.join(", ", myTeam));
-        myTeamArea.setEditable(false);
+        myBanArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        myTeamArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
         leftPanel.add(new JScrollPane(myBanArea));
         leftPanel.add(new JScrollPane(myTeamArea));
         
 
         // Right panel(Enemy Team and Bans)
         JPanel rightPanel = new JPanel(new GridLayout(2, 1));
-        enemyBanArea = new JTextArea("Bans:\n" + String.join(", ", enemyBans));
-        enemyBanArea.setEditable(false);
-        enemyTeamArea = new JTextArea("Enemy Team:\n" + String.join(", ", enemyTeam));
-        enemyTeamArea.setEditable(false);
+        enemyBanArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        enemyTeamArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
         rightPanel.add(new JScrollPane(enemyBanArea));
         rightPanel.add(new JScrollPane(enemyTeamArea));
+
+        // draw teams area
+        drawTeamsArea();
 
         // Panel with fixed rows of 5 buttons
         buttonPanel = new JPanel();
@@ -106,25 +105,68 @@ public class drawUI {
     }
 
     void drawButtonPanel() {
-        buttonPanel.removeAll();
-        for (String champion : availableChampions) {
-            JButton champButton = new JButton(champion);
+        // buttonPanel.removeAll();
+        for (Champion champion : availableChampions) {
+            JButton champButton = new JButton(champion.getName());
+            champButton.setIcon(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
             champButton.setFont(new Font("Arial", Font.BOLD, 12));
-            champButton.setPreferredSize(new Dimension(100, 100)); // Ensure square buttons
-            champButton.setMaximumSize(new Dimension(100, 100));  // Optional, to enforce square buttons
             champButton.addActionListener(new ChampionButtonListener(champion));
             buttonPanel.add(champButton);
         }
-        buttonPanel.revalidate();
-        buttonPanel.repaint();
+        // buttonPanel.revalidate();
+        // buttonPanel.repaint();
+    }
+
+    void drawTeamsArea() {
+        // draw my team
+        for (Champion champion : myTeam) {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panel.add(new JLabel(champion.getName()));
+            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
+            myTeamArea.add(panel);
+        }
+
+        // draw my bans
+        for (Champion champion : myBans) {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panel.add(new JLabel(champion.getName()));
+            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
+            myBanArea.add(panel);
+        }
+
+        // draw enemy team
+        for (Champion champion : enemyTeam) {
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panel.add(new JLabel(champion.getName()));
+            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
+            enemyTeamArea.add(panel);
+        }
+
+        // draw enemy bans
+        for (Champion champion : enemyBans) {    
+            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panel.add(new JLabel(champion.getName()));
+            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
+            enemyBanArea.add(panel);
+        }
+        
     }
 
     public void updateUI() {
         // Update the text areas
-        myBanArea.setText("Bans:\n" + String.join("\n", myBans));
-        enemyBanArea.setText("Bans:\n" + String.join("\n", enemyBans));
-        myTeamArea.setText("My Team:\n" + String.join("\n", myTeam));
-        enemyTeamArea.setText("Enemy Team:\n" + String.join("\n", enemyTeam));
+        myBanArea.removeAll();
+        enemyBanArea.removeAll();
+        myTeamArea.removeAll();
+        enemyTeamArea.removeAll();
+        drawTeamsArea();
+        myBanArea.revalidate();
+        myBanArea.repaint();
+        enemyBanArea.revalidate();
+        enemyBanArea.repaint();
+        myTeamArea.revalidate();
+        myTeamArea.repaint();
+        enemyTeamArea.revalidate();
+        enemyTeamArea.repaint();
 
         // Refresh button list
         buttonPanel.removeAll();
@@ -135,47 +177,57 @@ public class drawUI {
         frame.repaint();
     }
 
-    public void closeWindowAndShowSummary(List<String> myBans, List<String> enemyBans) {
-        frame.dispose();  // Close the main window
+    public void closeWindowAndShowSummary(List<Champion> myBans, List<Champion> enemyBans) {
+        // Zamknięcie głównego okna
+        frame.dispose();
 
-        // Show the summary table
-        showSummaryTable(myBans, enemyBans);
-    }
-
-    public void showSummaryTable(List<String> myBans, List<String> enemyBans) {
-        // Create the table to show the summary
-        String[] columns = {"Team", "Bans", "Picks"};
-        Object[][] data = {
-                {"My Team", String.join(", ", myBans), String.join(", ", myTeam)},
-                {"Enemy Team", String.join(", ", enemyBans), String.join(", ", enemyTeam)}
-        };
-
-        JTable table = new JTable(data, columns);
-        JScrollPane scrollPane = new JScrollPane(table);
-
-        // Create a new JFrame to show the summary
-        JFrame summaryFrame = new JFrame("Champion Select Summary");
+        // Tworzenie nowego okna podsumowującego
+        JFrame summaryFrame = new JFrame("Summary");
+        summaryFrame.setSize(400, 300);
         summaryFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        summaryFrame.setSize(600, 300);
+
+        // Tworzymy panel z informacjami o banach
+        JTextArea summaryArea = new JTextArea();
+        summaryArea.setEditable(false);
+
+        // Tworzymy podsumowanie banów
+        StringBuilder summaryText = new StringBuilder("Bans Summary:\n");
+        summaryText.append("My Bans:\n");
+        for (Champion ban : myBans) {
+            summaryText.append("- ").append(ban.getName()).append("\n");
+        }
+
+        summaryText.append("\nEnemy Bans:\n");
+        for (Champion ban : enemyBans) {
+            summaryText.append("- ").append(ban.getName()).append("\n");
+        }
+
+        // Ustawienie tekstu w JTextArea
+        summaryArea.setText(summaryText.toString());
+
+        // Ustawienie scrolla
+        JScrollPane scrollPane = new JScrollPane(summaryArea);
         summaryFrame.add(scrollPane);
+
+        // Wyświetlamy okno podsumowujące
         summaryFrame.setVisible(true);
     }
 
     private class ChampionButtonListener implements ActionListener {
-        private final String champion;
+        private final Champion champion;
 
-        public ChampionButtonListener(String champion) {
+        public ChampionButtonListener(Champion champion) {
             this.champion = champion;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             if (availableChampions.contains(champion)) {
-                selectedChampion = champion;
+                selectedChampion = champion.getName();
                 availableChampions.remove(champion);
                 Component[] components = buttonPanel.getComponents();
                 for (Component component : components) {
-                    if (component instanceof JButton && ((JButton) component).getText().equals(champion)) {
+                    if (component instanceof JButton && ((JButton) component).getText().equals(champion.getName())) {
                         buttonPanel.remove(component);
                         break;
                     }
@@ -183,7 +235,7 @@ public class drawUI {
                 buttonPanel.revalidate();
                 buttonPanel.repaint();
             } else {
-                JOptionPane.showMessageDialog(frame, "Wait for your turn.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Champion is already selected or banned.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
