@@ -28,7 +28,6 @@ public Champion(String name, String imagePath) {
         // Handle the case where the file cannot be read
         image = new ImageIcon("images\\placeholder.jpg"); // or some other error image
     } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 }
