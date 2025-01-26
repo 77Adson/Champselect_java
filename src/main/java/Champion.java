@@ -1,3 +1,4 @@
+package main.java;
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
