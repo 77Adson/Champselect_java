@@ -1,4 +1,3 @@
-package main.java;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -10,7 +9,19 @@ public class main {
     private static int teamSizeLimit;
     private static int banNumber;
 
-    
+    static {
+        // Dodajemy przykładowych championów
+        champions.add(new Champion("pepe", "pepe.png"));
+        champions.add(new Champion("amongus", "amongus.png"));
+        champions.add(new Champion("stanczyk", "stanczyk.png"));
+        champions.add(new Champion("maxwell", "maxwell.png"));
+        champions.add(new Champion("freddy", "freddy.png"));
+        champions.add(new Champion("richard", "richard.png"));
+        champions.add(new Champion("muscleman", "muscleman.png"));
+        champions.add(new Champion("walterwhite", "walterwhite.png"));
+        champions.add(new Champion("vegeta", "vegeta.png"));
+        champions.add(new Champion("frieza", "frieza.png"));
+    }
 
     public static void startChampionSelect(Socket socket, boolean isServer, Map<String, Integer> settings) {
         teamSizeLimit = settings.get("teamSizeLimit");
