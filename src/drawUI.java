@@ -30,26 +30,50 @@ public class drawUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
+        frame.setResizable(false);
 
-        // Left panel(My Team and Bans)
-        JPanel leftPanel = new JPanel(new GridLayout(2, 1));
-        myBanArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        myTeamArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        leftPanel.add(new JScrollPane(myBanArea));
-        leftPanel.add(new JScrollPane(myTeamArea));
-        
+        // top panel for bans
+        JPanel topArea = new JPanel(new GridLayout(1, 2, 10, 0)); // 1 row, 2 columns, 10px horizontal gap
+        topArea.setBackground(Color.BLACK);
+        topArea.setPreferredSize(new Dimension(800, 80)); // Adjust height to 100px (~16.6% of 600px)
+        // Add components to top area
+        myBanArea = new JPanel();
+        myBanArea.setBackground(Color.GRAY);
+        myBanArea.add(new JLabel("My Bans"));
 
-        // Right panel(Enemy Team and Bans)
-        JPanel rightPanel = new JPanel(new GridLayout(2, 1));
-        enemyBanArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        enemyTeamArea = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        rightPanel.add(new JScrollPane(enemyBanArea));
-        rightPanel.add(new JScrollPane(enemyTeamArea));
+        enemyBanArea = new JPanel();
+        enemyBanArea.setBackground(Color.GRAY);
+        enemyBanArea.add(new JLabel("Enemy Bans"));
 
-        // draw teams area
-        drawTeamsArea();
+        topArea.add(myBanArea);
+        topArea.add(enemyBanArea);
 
-        // Panel with fixed rows of 5 buttons
+        // bottom panel holding myteam, enemyteam and buttons
+        // Bottom area (80-90% height)
+        JPanel bottomArea = new JPanel(new BorderLayout());
+        bottomArea.setBackground(Color.DARK_GRAY);
+
+        // Left panel for my team
+        myTeamArea = new JPanel();
+        myTeamArea.setBackground(Color.GREEN);
+        myTeamArea.setPreferredSize(new Dimension(160, 0)); // 20% of 800px width (example for initial size)
+        myTeamArea.add(new JLabel("My team"));
+
+        drawTeamsArea(myTeam, myBans, myTeamArea, myBanArea);
+
+        // Right panel for enemy team
+        enemyTeamArea = new JPanel();
+        enemyTeamArea.setBackground(Color.PINK);
+        enemyTeamArea.setPreferredSize(new Dimension(160, 0)); // 20% of 800px width
+        enemyTeamArea.add(new JLabel("Enemy team"));
+
+        drawTeamsArea(enemyTeam, enemyBans, enemyTeamArea, enemyBanArea);
+
+
+        // middle panel for buttons 5 columns, unlimited rows
+        JPanel middlePanel = new JPanel(new BorderLayout());
+        middlePanel.add(new JLabel("Available Champions"), BorderLayout.NORTH);
+        middlePanel.setBackground(Color.orange);
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(0, 5, 10, 10)); // 5 columns, unlimited rows
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -58,14 +82,18 @@ public class drawUI {
 
         // Wrap the button panel in a JScrollPane
         JScrollPane buttonScrollPane = new JScrollPane(buttonPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        buttonScrollPane.setPreferredSize(new Dimension(550, 400));
+        buttonScrollPane.setPreferredSize(new Dimension(550, 500));
         buttonScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smooth scrolling
+        middlePanel.add(buttonScrollPane, BorderLayout.SOUTH);
 
 
         // Add components to frame
-        frame.add(buttonScrollPane, BorderLayout.CENTER);
-        frame.add(leftPanel, BorderLayout.WEST);
-        frame.add(rightPanel, BorderLayout.EAST);
+        bottomArea.add(middlePanel, BorderLayout.CENTER);
+        bottomArea.add(myTeamArea, BorderLayout.WEST);
+        bottomArea.add(enemyTeamArea, BorderLayout.EAST);
+
+        frame.add(topArea, BorderLayout.NORTH);
+        frame.add(bottomArea, BorderLayout.CENTER);
 
         frame.setVisible(true);
     }
@@ -74,7 +102,7 @@ public class drawUI {
 
     public String getChampionChoice(String actionMessage) {
         selectedChampion = null;
-        JOptionPane.showMessageDialog(frame, actionMessage, "Action Required", JOptionPane.INFORMATION_MESSAGE);
+        // JOptionPane.showMessageDialog(frame, actionMessage, "Action Required", JOptionPane.INFORMATION_MESSAGE);
 
         while (selectedChampion == null) {
             try {
@@ -117,40 +145,42 @@ public class drawUI {
         // buttonPanel.repaint();
     }
 
-    void drawTeamsArea() {
-        // draw my team
-        for (Champion champion : myTeam) {
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            panel.add(new JLabel(champion.getName()));
-            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
-            myTeamArea.add(panel);
+    void drawTeamsArea(List<Champion> team, List<Champion> bans, JPanel teamArea, JPanel banArea) {
+        teamArea.removeAll();
+        banArea.removeAll();
+    
+        for (Champion champion : team) {
+            teamArea.add(createChampionPanel(champion, false));
         }
-
-        // draw my bans
-        for (Champion champion : myBans) {
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            panel.add(new JLabel(champion.getName()));
-            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
-            myBanArea.add(panel);
+    
+        for (Champion champion : bans) {
+            banArea.add(createChampionPanel(champion, true));
         }
-
-        // draw enemy team
-        for (Champion champion : enemyTeam) {
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            panel.add(new JLabel(champion.getName()));
-            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
-            enemyTeamArea.add(panel);
-        }
-
-        // draw enemy bans
-        for (Champion champion : enemyBans) {    
-            JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            panel.add(new JLabel(champion.getName()));
-            panel.add(new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))));
-            enemyBanArea.add(panel);
-        }
-        
+    
+        teamArea.revalidate();
+        banArea.revalidate();
+        teamArea.repaint();
+        banArea.repaint();
     }
+    
+    private JPanel createChampionPanel(Champion champion, boolean isBan) {
+        JPanel champPanel = new JPanel();
+        if (isBan) {
+            champPanel.setBackground(Color.RED);
+            JLabel imageLabel = new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH)));
+            champPanel.add(imageLabel);
+        } else {
+            JLabel imageLabel = new JLabel(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+            champPanel.add(imageLabel);
+        }
+        champPanel.setLayout(new BoxLayout(champPanel, BoxLayout.Y_AXIS));
+        JLabel nameLabel = new JLabel(champion.getName(), JLabel.CENTER);
+        champPanel.add(nameLabel);
+        
+        return champPanel;
+    }
+    
+    
 
     public void updateUI() {
         // Update the text areas
@@ -158,7 +188,8 @@ public class drawUI {
         enemyBanArea.removeAll();
         myTeamArea.removeAll();
         enemyTeamArea.removeAll();
-        drawTeamsArea();
+        drawTeamsArea(myTeam, myBans, myTeamArea, myBanArea);
+        drawTeamsArea(enemyTeam, enemyBans, enemyTeamArea, enemyBanArea);
         myBanArea.revalidate();
         myBanArea.repaint();
         enemyBanArea.revalidate();

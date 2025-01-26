@@ -27,7 +27,7 @@ public class start {
         JTextField teamSizeField = new JTextField("2", 5);
 
         JLabel banNumberLabel = new JLabel("Enter ban number:");
-        JTextField banNumberField = new JTextField("1", 5);
+        JTextField banNumberField = new JTextField("2", 5);
 
         panel.add(teamSizeLabel);
         panel.add(teamSizeField);
