@@ -28,7 +28,7 @@ public class drawUI {
         // Frame setup
         frame = new JFrame("Champion Select");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1100, 650);
         frame.setLayout(new BorderLayout());
         frame.setResizable(false);
 
@@ -74,15 +74,15 @@ public class drawUI {
         JPanel middlePanel = new JPanel(new BorderLayout());
         middlePanel.add(new JLabel("Available Champions"), BorderLayout.NORTH);
         middlePanel.setBackground(Color.orange);
+        // Button panel
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(0, 5, 10, 10)); // 5 columns, unlimited rows
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
         drawButtonPanel();
 
         // Wrap the button panel in a JScrollPane
         JScrollPane buttonScrollPane = new JScrollPane(buttonPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        buttonScrollPane.setPreferredSize(new Dimension(550, 500));
+        buttonScrollPane.setPreferredSize(new Dimension(550, 450));
         buttonScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smooth scrolling
         middlePanel.add(buttonScrollPane, BorderLayout.SOUTH);
 
@@ -133,17 +133,52 @@ public class drawUI {
     }
 
     void drawButtonPanel() {
-        // buttonPanel.removeAll();
+        // Set up GridBagLayout for buttonPanel
+        buttonPanel.setLayout(new GridBagLayout()); // Use GridBagLayout
+        buttonPanel.removeAll(); // Clear any previous components
+    
+        // Create a GridBagConstraints object
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE; // No stretching, fixed size
+        gbc.insets = new Insets(10, 10, 10, 10); // Add padding between buttons
+    
+        int row = 0;
+        int col = 0;
+    
+        // Loop through the available champions to add buttons
         for (Champion champion : availableChampions) {
             JButton champButton = new JButton(champion.getName());
             champButton.setIcon(new ImageIcon(champion.getImage().getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
             champButton.setFont(new Font("Arial", Font.BOLD, 12));
+    
+            // Set fixed size for the button
+            champButton.setPreferredSize(new Dimension(100, 120)); // Fixed width and height
+            champButton.setHorizontalTextPosition(SwingConstants.CENTER); // Center the text
+            champButton.setVerticalTextPosition(SwingConstants.BOTTOM); // Place text below the icon
             champButton.addActionListener(new ChampionButtonListener(champion));
-            buttonPanel.add(champButton);
+    
+            // Set the position in the grid using GridBagConstraints
+            gbc.gridx = col;
+            gbc.gridy = row;
+            
+            // Add the button to the panel at the specified grid position
+            buttonPanel.add(champButton, gbc);
+    
+            // Move to the next column
+            col++;
+    
+            // After 5 buttons, move to the next row and reset column index
+            if (col == 5) {
+                col = 0;
+                row++;
+            }
         }
-        // buttonPanel.revalidate();
-        // buttonPanel.repaint();
+    
+        // Revalidate and repaint to update the panel
+        buttonPanel.revalidate();
+        buttonPanel.repaint();
     }
+    
 
     void drawTeamsArea(List<Champion> team, List<Champion> bans, JPanel teamArea, JPanel banArea) {
         teamArea.removeAll();
@@ -176,7 +211,7 @@ public class drawUI {
         champPanel.setLayout(new BoxLayout(champPanel, BoxLayout.Y_AXIS));
         JLabel nameLabel = new JLabel(champion.getName(), JLabel.CENTER);
         champPanel.add(nameLabel);
-        
+
         return champPanel;
     }
     
@@ -184,20 +219,9 @@ public class drawUI {
 
     public void updateUI() {
         // Update the text areas
-        myBanArea.removeAll();
-        enemyBanArea.removeAll();
-        myTeamArea.removeAll();
-        enemyTeamArea.removeAll();
         drawTeamsArea(myTeam, myBans, myTeamArea, myBanArea);
         drawTeamsArea(enemyTeam, enemyBans, enemyTeamArea, enemyBanArea);
-        myBanArea.revalidate();
-        myBanArea.repaint();
-        enemyBanArea.revalidate();
-        enemyBanArea.repaint();
-        myTeamArea.revalidate();
-        myTeamArea.repaint();
-        enemyTeamArea.revalidate();
-        enemyTeamArea.repaint();
+
 
         // Refresh button list
         buttonPanel.removeAll();
