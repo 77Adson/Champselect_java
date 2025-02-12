@@ -12,6 +12,7 @@ public class main {
     private static final List<Champion> champions = new ArrayList<>();
     private static int teamSizeLimit;
     private static int banNumber;
+    private static List<Character> sequence_of_selection;
 
     static {
         // Dodajemy przykładowych championów
@@ -60,7 +61,9 @@ public class main {
     public static void startChampionSelect(Socket socket, boolean isServer, Map<String, Integer> settings) {
         teamSizeLimit = settings.get("teamSizeLimit");
         banNumber = settings.get("banNumber");
-        banNumber *= 2;
+        sequence_of_selection = new ArrayList<>();
+        create_selection_sequence(teamSizeLimit, banNumber);
+        System.out.println(sequence_of_selection);
 
         try (
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -75,7 +78,7 @@ public class main {
             boolean turn = isServer;
 
             // Tworzymy GUI
-            drawUI userInterface = new drawUI();
+            drawUI userInterface = new drawUI(teamSizeLimit, banNumber);
 
             // Faza wyboru
             while (myTeam.size() < teamSizeLimit || enemyTeam.size() < teamSizeLimit) {
@@ -112,7 +115,7 @@ public class main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-}
+    }
     
     private static Champion findChampionByName(String name) {
         for (Champion champion : champions) {
@@ -123,4 +126,22 @@ public class main {
         return null;
     }
 
+    private static void create_selection_sequence(int teamSizeLimit, int banNumber) {
+        int firstwave = banNumber / 2;
+        int secondwave = banNumber - firstwave;
+        int middle = teamSizeLimit / 2;
+
+        for (int i = 0; i < firstwave; i++) {
+            sequence_of_selection.add('B');
+        }
+        for (int i = 0; i < middle; i++) {
+            sequence_of_selection.add('P');
+        }
+        for (int i = 0; i < secondwave; i++) {
+            sequence_of_selection.add('B');
+        }
+        for (int i = 0; i < teamSizeLimit-middle; i++) {
+            sequence_of_selection.add('P');
+        }
+    }
 }

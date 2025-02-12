@@ -15,7 +15,7 @@ public class drawUI {
     Color buttonBackground = new Color(50, 50, 50); // Przyciski w neutralnym kolorze
     Color buttonForeground = Color.WHITE; // Biały tekst na przyciskach
 
-    public drawUI() {
+    public drawUI(int teamSizeLimit, int banNumber) {
         frame = new JFrame("Champion Select");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);

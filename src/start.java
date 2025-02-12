@@ -24,7 +24,7 @@ public class start {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JLabel teamSizeLabel = new JLabel("Enter team size limit:");
-        JTextField teamSizeField = new JTextField("2", 5);
+        JTextField teamSizeField = new JTextField("4", 5);
 
         JLabel banNumberLabel = new JLabel("Enter ban number:");
         JTextField banNumberField = new JTextField("2", 5);
